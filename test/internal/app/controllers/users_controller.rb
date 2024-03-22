@@ -10,6 +10,11 @@ class UsersController < ActionController::Base
     head :ok
   end
 
+  def upgrade_memberships_when_duplicate
+    field_test_upgrade_memberships participant: [current_user, "visitor_token"]
+    head :ok
+  end
+
   private
 
   def current_user
