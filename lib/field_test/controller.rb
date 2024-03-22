@@ -22,7 +22,14 @@ module FieldTest
           end
           membership.participant_type = preferred.type if membership.respond_to?(:participant_type=)
           membership.participant_id = preferred.id if membership.respond_to?(:participant_id=)
-          membership.save!
+          begin
+            membership.save!
+          rescue ActiveRecord::RecordNotUnique
+            memberships = FieldTest::Membership.where(experiment: membership.experiment)
+            existing_membership = memberships.find_by(preferred.where_values)
+            existing_membership.events << membership.events
+            membership.destroy!
+          end
         end
       end
     end
