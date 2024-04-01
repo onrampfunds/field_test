@@ -1,0 +1,21 @@
+default: &default
+  exclude_bots: true
+
+production:
+  <<: *default
+  experiments:
+    production_experiment:
+      variants:
+        - variant_a
+        - variant_b
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+  experiments:
+    test_experiment:
+      variants:
+        - test_variant_a
+        - test_variant_b

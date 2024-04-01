@@ -19,6 +19,7 @@ module FieldTest
   class Error < StandardError; end
   class ExperimentNotFound < Error; end
   class UnknownParticipant < Error; end
+  class MissingConfig < Error; end
 
   # same as ahoy
   UUID_NAMESPACE = "a82ae811-5011-45ab-a728-569df7499c5f"
@@ -29,7 +30,21 @@ module FieldTest
   end
 
   def self.config
-    @config ||= YAML.safe_load(ERB.new(File.read(config_path)).result, permitted_classes: [Date, Time], aliases: true)
+    @config ||= YAML.safe_load(
+      ERB.new(File.read(config_path)).result, 
+      permitted_classes: [Date, Time], 
+      aliases: true
+    ).then do |config|
+      if defined?(Rails)
+        config.fetch(Rails.env, {}).tap do |c|
+          if c.empty?
+            raise MissingConfig.new "FieldTest config not found for #{Rails.env} environment"
+          end
+        end
+      else
+        config
+      end
+    end
   end
 
   def self.excluded_ips
