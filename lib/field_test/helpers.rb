@@ -1,3 +1,5 @@
+require "device_detector"
+
 module FieldTest
   module Helpers
     def field_test(experiment, **options)
@@ -18,8 +20,26 @@ module FieldTest
 
         options[:exclude] ||= FieldTest.excluded_ips.any? { |ip| ip.include?(request.remote_ip) }
 
+        client = DeviceDetector.new(request.user_agent)
+        device_type =
+          case client.device_type
+          when "smartphone"
+            "Mobile"
+          when "tv"
+            "TV"
+          else
+            client.device_type.try(:titleize)
+          end
+
+        tech_properties = {
+          browser: client.name,
+          os: client.os_name,
+          device_type: device_type
+        }
+
         options[:ip] = request.remote_ip
         options[:user_agent] = request.user_agent
+        options[:tech_properties] = tech_properties
       end
 
       # don't update variant when passed via params

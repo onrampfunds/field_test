@@ -113,6 +113,46 @@ class ControllerTest < ActionDispatch::IntegrationTest
     assert_includes membership.events.pluck(:name), "signed_up", "other_goal"
   end
 
+  def test_recording_tech_properties_when_entering_an_experiment
+    user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"
+    get users_url, headers: {"HTTP_USER_AGENT" => user_agent}
+    assert_response :success
+
+    membership = FieldTest::Membership.last
+    assert_equal(
+      {
+        "tech_properties" => {
+          "browser" => "Firefox",
+          "os" => "Mac",
+          "device_type" => "Desktop"
+        }
+      },
+      membership.properties
+    )
+  end
+
+  def test_does_not_override_tech_properties
+    user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Firefox/78.0"
+    get users_url, headers: {"HTTP_USER_AGENT" => user_agent}
+    assert_response :success
+
+    user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0) Gecko/20100101 Chrome/78.0"
+    get users_url, headers: {"HTTP_USER_AGENT" => user_agent}
+    assert_response :success
+
+    membership = FieldTest::Membership.last
+    assert_equal(
+      {
+        "tech_properties" => {
+          "browser" => "Firefox",
+          "os" => "Mac",
+          "device_type" => "Desktop"
+        }
+      },
+      membership.properties
+    )
+  end
+
   def get(url, **options)
     options[:headers] ||= {}
     options[:headers]["HTTP_USER_AGENT"] ||= "Mozilla/5.0"
