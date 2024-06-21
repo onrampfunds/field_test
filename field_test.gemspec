@@ -20,4 +20,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activerecord", ">= 6.1"
   spec.add_dependency "browser", ">= 2"
   spec.add_dependency "rice", ">= 4.0.2"
+  spec.add_dependency "device_detector", ">= 1"
 end
