@@ -73,4 +73,34 @@ class ExperimentTest < Minitest::Test
     assert_equal ["red", "green", "blue"], experiment.variants
     assert_equal "red", experiment.control
   end
+
+  def test_tech_properties_first_time_saves_them
+    experiment = FieldTest::Experiment.find(:button_color)
+    tech_properties = {
+      "browser" => "Firefox",
+      "os" => "Mac OS X",
+      "device_type" => "Desktop"
+    }
+    experiment.variant("user123", tech_properties:)
+    membership = FieldTest::Membership.last
+
+    assert_equal tech_properties, membership.properties["tech_properties"]
+  end
+
+  def test_tech_properties_second_time_does_not_overwrite_them
+    experiment = FieldTest::Experiment.find(:button_color)
+    tech_properties = {
+      "browser" => "Firefox",
+      "os" => "Mac OS X",
+      "device_type" => "Desktop"
+    }
+    experiment.variant("user123", tech_properties:)
+    experiment.variant("user123", tech_properties: {})
+
+    assert_equal 1, FieldTest::Membership.count
+
+    membership = FieldTest::Membership.last
+
+    assert_equal tech_properties, membership.properties["tech_properties"]
+  end
 end

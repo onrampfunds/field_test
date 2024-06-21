@@ -50,6 +50,9 @@ module FieldTest
       end
       membership.participant_type = participant.type if membership.respond_to?(:participant_type=)
       membership.participant_id = participant.id if membership.respond_to?(:participant_id=)
+      if membership.properties["tech_properties"].nil? && options[:tech_properties].present?
+        membership.properties["tech_properties"] = options[:tech_properties]
+      end
 
       if membership.changed? && (!closed? || membership.persisted?)
         begin
