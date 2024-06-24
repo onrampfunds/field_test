@@ -17,6 +17,7 @@
       <th style="width: 20%;">Variant</th>
       <th style="width: 20%;">Converted</th>
       <th style="width: 20%;">Started</th>
+      <th style="width: 20%;">Device Type</th>
     </tr>
   </thead>
   <tbody>
@@ -49,6 +50,7 @@
             <%= membership.created_at.to_formatted_s(:short) %>
           <% end %>
         </td>
+        <td><%= membership.properties.dig("tech_properties", "device_type") %></td>
       </tr>
     <% end %>
   </tbody>
