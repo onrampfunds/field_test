@@ -29,7 +29,7 @@ module FieldTest
         }
       else
         {
-          participant_type: type,
+          participant_type: type ? type.constantize.base_class.to_s : type,
           participant_id: id
         }
       end
