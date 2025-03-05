@@ -19,5 +19,6 @@ ActiveRecord::Schema.define do
   end
 
   create_table :users do |t|
+    t.string :type
   end
 end

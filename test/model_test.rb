@@ -17,4 +17,24 @@ class ModelTest < Minitest::Test
     assert_equal 1, membership.events.count
     assert_equal event, membership.events.first
   end
+
+  def test_participant_type_setter
+    membership = FieldTest::Membership.new
+
+    # Test blank case
+    membership.participant_type = ""
+    assert_equal "", membership.participant_type
+
+    # Test nil case
+    membership.participant_type = nil
+    assert_nil membership.participant_type
+
+    # Test with a regular class
+    membership.participant_type = "User"
+    assert_equal "User", membership.participant_type
+
+    # Test with a subclass (should return base class)
+    membership.participant_type = "User::Admin"
+    assert_equal "User", membership.participant_type
+  end
 end

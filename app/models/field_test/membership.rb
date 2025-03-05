@@ -12,5 +12,13 @@ module FieldTest
     validates :participant_id, presence: true, if: -> { !FieldTest.legacy_participants }
     validates :experiment, presence: true
     validates :variant, presence: true
+
+    # This is a workaround to support subclasses of ActiveRecord models (STI)
+    # See: https://api.rubyonrails.org/classes/ActiveRecord/Associations/ClassMethods.html#label-Polymorphic+Associations
+    def participant_type=(class_name)
+      return super(class_name) if class_name.blank?
+
+      super(class_name.constantize.base_class.to_s)
+    end
   end
 end
